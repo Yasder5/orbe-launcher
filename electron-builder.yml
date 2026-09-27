@@ -1,0 +1,26 @@
+appId: fr.yasder5.orbelauncher
+productName: Orbe Launcher
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**
+  - package.json
+# les thèmes livrés restent des fichiers lisibles (copiés à côté de l'appli, modifiables)
+extraResources:
+  - from: themes
+    to: themes
+asarUnpack:
+  - node_modules/koffi/**
+win:
+  icon: build/icon.png
+  target: [nsis, portable]
+  artifactName: ${productName}-${version}-${arch}.${ext}
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: Orbe Launcher
+  artifactName: ${productName}-Setup-${version}.${ext}
+portable:
+  artifactName: ${productName}-Portable-${version}.${ext}
