@@ -12,8 +12,8 @@
     "preview": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "dist": "electron-vite build && electron-builder --win nsis portable",
-    "dist:dir": "electron-vite build && electron-builder --dir"
+    "dist": "electron-vite build && electron-builder --win nsis portable --publish never",
+    "dist:dir": "electron-vite build && electron-builder --dir --publish never"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",

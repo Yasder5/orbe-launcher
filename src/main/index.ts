@@ -1,9 +1,10 @@
 /* Processus principal : fenêtre plein écran, stockage, IPC. */
 import { join } from 'node:path'
 import { app, BrowserWindow } from 'electron'
-import { registerCore } from './ipc'
+import { emit, handle, registerCore } from './ipc'
 import { initLog, log } from './log'
 import { Store } from './store'
+import { registerThemeScheme, Themes } from './themes'
 
 // Toutes les données dans %APPDATA%/OrbeLauncher (réglages, bibliothèque, cache, logs)
 const dataDir = join(app.getPath('appData'), 'OrbeLauncher')
@@ -14,9 +15,11 @@ process.on('uncaughtException', (e) => L.error('exception non gérée', e))
 process.on('unhandledRejection', (e) => L.error('promesse rejetée', e))
 
 if (!app.requestSingleInstanceLock()) app.quit()
+registerThemeScheme()
 
 let win: BrowserWindow | null = null
 const store = new Store(dataDir)
+const themes = new Themes(dataDir)
 
 function createWindow(): BrowserWindow {
   const w = new BrowserWindow({
@@ -61,6 +64,9 @@ app.whenReady().then(() => {
       if (win && s.fullscreen !== before.fullscreen) win.setFullScreen(s.fullscreen)
     }
   })
+  themes.registerProtocol()
+  handle('themes:list', async () => themes.list())
+  themes.watch((id) => emit(win, 'themes:changed', { id, themes: themes.list() }))
   win = createWindow()
   L.info('démarrage', app.getVersion())
 })
