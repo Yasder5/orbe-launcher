@@ -1,0 +1,31 @@
+/* Orbe : touches propres au thème, par-dessus la base de l'interface (qui n'utilise que les variables). */
+
+/* Titres : Archivo 900 serré, comme le site */
+.title, .hero-title { font-weight: 900; letter-spacing: -.035em; line-height: .95; text-transform: uppercase; }
+
+/* Surtitre : petite capitale mono espacée, accent */
+.kicker { font-family: var(--font-mono); font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+.kicker::before { content: '// '; }
+
+/* Mot en contour accent dans un titre */
+.title mark, .hero-title mark { background: none; color: transparent; -webkit-text-stroke: max(1px, .02em) var(--accent); }
+
+/* Boutons : mono majuscule espacée, accent plein */
+.btn { font-family: var(--font-mono); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; font-size: 13px; }
+.btn--primary:is(.is-focused, :hover) { background: var(--text); color: var(--bg); }
+
+/* En-tête flouté avec filet */
+.topbar { backdrop-filter: blur(12px); background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
+
+/* Cartes : filet qui vire à l'accent au focus, image qui zoome doucement */
+.card { border: 1px solid var(--line); }
+.card.is-focused { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); }
+.card img { transition: transform var(--dur-slow) var(--ease); }
+.card.is-focused img { transform: scale(1.04); }
+
+/* Lignes de liste : décalage à droite au focus (comme la liste d'articles du site) */
+.row-item { border-top: 1px solid var(--line); transition: padding-left var(--dur-med) var(--ease), color var(--dur-med); }
+.row-item.is-focused { padding-left: 14px; color: var(--accent); }
+.row-item.is-focused::before { content: '▸ '; color: var(--accent); }
+
+::selection { background: var(--accent); color: var(--on-accent); }

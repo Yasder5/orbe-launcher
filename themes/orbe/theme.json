@@ -1,0 +1,41 @@
+{
+  "id": "orbe",
+  "name": "Orbe",
+  "author": "Yasser Boulayoune",
+  "version": "1.0.0",
+  "description": "Le thème principal : noir profond, accent lime, Archivo et JetBrains Mono, orbe de particules.",
+  "vars": {
+    "--bg": "#0a0a0a",
+    "--surface": "#121212",
+    "--surface-2": "#1a1a19",
+    "--text": "#f5f5f0",
+    "--muted": "#8f8f8a",
+    "--line": "#262624",
+    "--accent": "#d3fd50",
+    "--on-accent": "#0a0a0a",
+    "--danger": "#ff6b5a",
+    "--font-sans": "Archivo, system-ui, sans-serif",
+    "--font-mono": "'JetBrains Mono', ui-monospace, monospace",
+    "--radius-s": "4px",
+    "--radius-m": "4px",
+    "--radius-l": "6px",
+    "--shadow-card": "0 18px 40px rgba(0, 0, 0, .55)",
+    "--focus-ring": "0 0 0 2px #d3fd50, 0 0 32px rgba(211, 253, 80, .28)",
+    "--focus-scale": "1.06",
+    "--dur-fast": "150ms",
+    "--dur-med": "300ms",
+    "--dur-slow": "600ms",
+    "--ease": "cubic-bezier(.2, .8, .2, 1)"
+  },
+  "fonts": [
+    { "family": "Archivo", "src": "fonts/Archivo-100-900-latin.woff2", "weight": "100 900", "unicodeRange": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD" },
+    { "family": "Archivo", "src": "fonts/Archivo-100-900-latin-ext.woff2", "weight": "100 900", "unicodeRange": "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20AB, U+20AD-20C4, U+2C60-2C7F, U+A720-A7FF" },
+    { "family": "JetBrains Mono", "src": "fonts/JetBrainsMono-400-latin.woff2", "weight": "400 700", "unicodeRange": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD" },
+    { "family": "JetBrains Mono", "src": "fonts/JetBrainsMono-400-latin-ext.woff2", "weight": "400 700", "unicodeRange": "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20AB, U+20AD-20C4, U+2C60-2C7F, U+A720-A7FF" }
+  ],
+  "css": "theme.css",
+  "layout": { "library": "grid" },
+  "background": { "type": "orb" },
+  "splash": { "type": "orb", "duration": 1800 },
+  "sounds": {}
+}
