@@ -12,7 +12,7 @@ const games: Game[] = []
 
 async function themes(): Promise<ThemeEntry[]> {
   const out: ThemeEntry[] = []
-  for (const id of ['orbe', 'papier']) {
+  for (const id of ['orbe']) {
     const base = `./themes/${id}/`
     try {
       const c = validateTheme(await (await fetch(base + 'theme.json')).json(), id)

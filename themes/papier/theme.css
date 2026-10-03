@@ -1,6 +1,0 @@
-/* Papier : fond légèrement texturé par un dégradé, titres en italique. */
-body { background-image: radial-gradient(circle at 20% 0%, #fffaf0 0, transparent 60%); }
-.title, .hero-title { font-style: italic; font-weight: 700; }
-.kicker { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: .08em; }
-.btn { font-weight: 700; }
-.row-item { border-bottom: 1px dashed var(--line); }
