@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { ThemeEntry } from '@shared/ipc'
 import { api } from '../api'
+import { loadSounds, setVolume } from '../nav/sounds'
 import { useSettings } from '../state/settings'
 
 interface Ctx {
@@ -46,7 +47,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return api.on('themes:changed', ({ themes }) => { setThemes(themes); setVersion(Date.now()) })
   }, [])
   const theme = themes.find((t) => t.manifest.id === settings.theme) ?? themes.find((t) => t.manifest.id === 'orbe') ?? themes[0] ?? null
-  useEffect(() => { if (theme && ready) apply(theme, version) }, [theme, version, ready])
+  useEffect(() => {
+    if (!theme || !ready) return
+    apply(theme, version)
+    loadSounds(theme.base, theme.manifest.sounds)
+  }, [theme, version, ready])
+  useEffect(() => setVolume(settings.volume), [settings.volume])
   const url = (rel?: string) => (rel && theme ? theme.base + rel : undefined)
   return <ThemeCtx.Provider value={{ theme, themes, url }}>{children}</ThemeCtx.Provider>
 }

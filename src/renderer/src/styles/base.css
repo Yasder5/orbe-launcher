@@ -47,3 +47,33 @@ mark { background: none; color: var(--accent); }
 /* Fond animé */
 .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 .bg-layer canvas, .bg-layer video, .bg-layer img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Barre d'aide (boutons) */
+.hintbar { position: fixed; inset: auto 0 0 0; height: 64px; display: flex; justify-content: flex-end; align-items: center; gap: 28px; padding: 0 var(--pad);
+  font: 400 14px/1 var(--font-mono); color: var(--muted); letter-spacing: .06em; z-index: 30; background: linear-gradient(transparent, color-mix(in srgb, var(--bg) 85%, transparent) 40%); }
+.hint { display: inline-flex; align-items: center; gap: 10px; }
+.glyph { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: 700 13px/1 var(--font-mono); }
+.glyph--xbox.glyph--accept { background: #107c10; border-color: #107c10; color: #fff; }
+.glyph--xbox.glyph--back { background: #c4302b; border-color: #c4302b; color: #fff; }
+.glyph--xbox.glyph--x { background: #1f6fd1; border-color: #1f6fd1; color: #fff; }
+.glyph--xbox.glyph--y { background: #d6a400; border-color: #d6a400; color: #111; }
+.glyph--keyboard, .glyph--mouse { border-radius: var(--radius-s); }
+
+/* Fenêtres modales */
+.modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(10px); animation: modal-in var(--dur-med) var(--ease); }
+@keyframes modal-in { from { opacity: 0; } }
+
+/* Clavier virtuel */
+.osk__box { width: min(1100px, 92vw); padding-bottom: 60px; }
+.osk__field { min-height: 76px; padding: 18px 22px; margin-bottom: 26px; border-radius: var(--radius-m); border: 1px solid var(--accent); background: var(--surface); font-size: 30px; white-space: pre; overflow: hidden; }
+.osk__caret { display: inline-block; width: 3px; height: 1.1em; margin-left: 2px; vertical-align: -.15em; background: var(--accent); }
+.osk__keys { display: grid; gap: 10px; }
+.osk__row { display: flex; gap: 10px; justify-content: center; }
+.osk__key { flex: 1; max-width: 96px; height: 68px; border-radius: var(--radius-s); background: var(--surface); border: 1px solid var(--line); font: 600 24px/1 var(--font-sans);
+  transition: transform var(--dur-fast) var(--ease), background var(--dur-fast), box-shadow var(--dur-fast); }
+.osk__key--wide { max-width: 150px; }
+.osk__key--space { max-width: 420px; flex: 4; font-size: 16px; }
+.osk__key--ok { max-width: 180px; background: var(--accent); color: var(--on-accent); font-size: 16px; }
+.osk__key.is-on { color: var(--accent); }
+.osk__key.is-focused { box-shadow: var(--focus-ring); transform: scale(1.06); background: var(--surface-2); }
+.osk__key--ok.is-focused { background: var(--accent); }
