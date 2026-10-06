@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiPManifest version="4.0">
+  <gameTitles>
+    <gameTitle locale="en_US">Mass Effect Legendary Edition</gameTitle>
+    <gameTitle locale="fr_FR">Mass Effect édition Légendaire</gameTitle>
+  </gameTitles>
+  <contentIDs><contentID>Origin.OFR.50.0004012</contentID></contentIDs>
+  <runtime>
+    <launcher>
+      <filePath>[HKEY_LOCAL_MACHINE\SOFTWARE\BioWare\Mass Effect Legendary Edition\Install Dir]\Game\Launcher\MassEffectLauncher.exe</filePath>
+    </launcher>
+  </runtime>
+</DiPManifest>

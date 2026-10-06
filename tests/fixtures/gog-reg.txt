@@ -1,0 +1,19 @@
+
+HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games
+
+HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games\1207658924
+    gameName    REG_SZ    The Witcher 3: Wild Hunt
+    exe    REG_SZ    D:\GOG Games\The Witcher 3\bin\x64\witcher3.exe
+    path    REG_SZ    D:\GOG Games\The Witcher 3
+    workingDir    REG_SZ    D:\GOG Games\The Witcher 3\bin\x64
+    launchParam    REG_SZ    
+    gameID    REG_SZ    1207658924
+    dependsOn    REG_SZ    
+
+HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games\1640424747
+    gameName    REG_SZ    Witcher 3 DLC
+    exe    REG_SZ    D:\GOG Games\The Witcher 3\bin\x64\witcher3.exe
+    dependsOn    REG_SZ    1207658924
+
+HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\GOG.com\Games\1207658924\sub
+    x    REG_DWORD    0x1

@@ -1,0 +1,13 @@
+{
+  "FormatVersion": 0,
+  "bIsIncompleteInstall": false,
+  "LaunchCommand": "",
+  "LaunchExecutable": "Binaries/Win64/Game.exe",
+  "DisplayName": "Outer Wilds",
+  "InstallLocation": "C:\\Program Files\\Epic Games\\OuterWilds",
+  "CatalogNamespace": "ns123",
+  "CatalogItemId": "item456",
+  "AppName": "Bison",
+  "MainGameAppName": "Bison",
+  "AppCategories": ["public", "games", "applications"]
+}
