@@ -60,3 +60,16 @@ export function gamePatch(p: unknown): GamePatch {
   }
   return o
 }
+
+export function manualInput(p: unknown): { name: string; exe: string; args?: string; workDir?: string } {
+  if (!p || typeof p !== 'object') throw new InvalidInput('jeu invalide')
+  const i = p as Record<string, unknown>
+  const exe = str(i.exe, 260, 'exécutable')
+  if (!/\.(exe|bat|cmd|lnk|url)$/i.test(exe)) throw new InvalidInput('exécutable .exe, .bat, .cmd, .lnk ou .url attendu')
+  return {
+    name: str(i.name ?? '', 200, 'nom').trim() || exe.split(/[\\/]/).pop()!.replace(/\.\w+$/, ''),
+    exe,
+    args: i.args === undefined ? undefined : str(i.args, 1000, 'arguments'),
+    workDir: i.workDir === undefined || i.workDir === '' ? undefined : str(i.workDir, 260, 'dossier de travail')
+  }
+}

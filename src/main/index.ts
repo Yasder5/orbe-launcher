@@ -2,6 +2,7 @@
 import { join } from 'node:path'
 import { app, BrowserWindow } from 'electron'
 import { emit, handle, registerCore } from './ipc'
+import { registerLibrary } from './library'
 import { initLog, log } from './log'
 import { Store } from './store'
 import { registerThemeScheme, Themes } from './themes'
@@ -56,19 +57,22 @@ app.on('second-instance', () => {
 })
 
 app.whenReady().then(() => {
-  registerCore({
+  const ctx = {
     store,
     dataDir,
     win: () => win,
-    onSettings: (s, before) => {
+    onSettings: (s: typeof store.settings, before: typeof store.settings) => {
       if (win && s.fullscreen !== before.fullscreen) win.setFullScreen(s.fullscreen)
     }
-  })
+  }
+  registerCore(ctx)
+  const library = registerLibrary(ctx)
   themes.registerProtocol()
   handle('themes:list', async () => themes.list())
   themes.watch((id) => emit(win, 'themes:changed', { id, themes: themes.list() }))
   win = createWindow()
   L.info('démarrage', app.getVersion())
+  win.webContents.once('did-finish-load', () => library.rescan()) // scan au démarrage, l'interface affiche déjà la bibliothèque connue
 })
 
 app.on('before-quit', () => store.flush())

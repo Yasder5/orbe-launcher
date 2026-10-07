@@ -49,7 +49,10 @@ export function registerCore(ctx: Ctx): void {
   handle('library:update', async (id, patch) => {
     const g = store.games.get(str(id, 300, 'id'))
     if (!g) throw new Error('jeu introuvable')
-    Object.assign(g, gamePatch(patch))
+    const p = gamePatch(patch)
+    if (p.name !== undefined && p.name !== g.name) g.nameLocked = true
+    if (p.args !== undefined || p.workDir !== undefined) g.argsLocked = true
+    Object.assign(g, p)
     changed()
     return g
   })

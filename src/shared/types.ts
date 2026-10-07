@@ -38,6 +38,8 @@ export interface Game {
   media: GameMedia
   info?: GameInfo
   steamAppId?: string // utile pour les médias même hors Steam
+  nameLocked?: boolean // nom modifié par l'utilisateur : le scan ne l'écrase plus
+  argsLocked?: boolean // arguments / dossier de travail modifiés à la main
 }
 
 export interface Session {

@@ -1,6 +1,26 @@
 /* Contrat IPC : une seule source de vérité pour le preload (window.orbe) et les handlers du processus principal. */
-import type { AppInfo, Collection, Game, Settings } from './types'
+import type { AppInfo, Collection, Game, ScannerId, Settings } from './types'
 import type { ThemeManifest } from './theme'
+
+export interface ScanReport {
+  added: number
+  updated: number
+  uninstalled: number
+  merged: number
+  failed: ScannerId[]
+  total: number
+}
+
+export interface ManualGameInput {
+  name: string
+  exe: string
+  args?: string
+  workDir?: string
+}
+
+export interface FsEntry { name: string; path: string; dir: boolean }
+export interface FsListing { dir: string; parent: string | null; entries: FsEntry[] }
+export type FsFilter = 'exe' | 'image' | 'dir'
 
 export interface ThemeEntry {
   manifest: ThemeManifest
@@ -13,6 +33,10 @@ export interface Api {
   'app:info': () => Promise<AppInfo>
   'library:list': () => Promise<Game[]>
   'library:update': (id: string, patch: Partial<Pick<Game, 'name' | 'favorite' | 'hidden' | 'exe' | 'args' | 'workDir' | 'collections'>>) => Promise<Game>
+  'library:rescan': () => Promise<ScanReport>
+  'library:addManual': (input: ManualGameInput) => Promise<Game>
+  'library:remove': (id: string) => Promise<void>
+  'fs:list': (dir: string, filter: FsFilter) => Promise<FsListing>
   'collections:list': () => Promise<Collection[]>
   'collections:create': (name: string) => Promise<Collection>
   'collections:rename': (id: string, name: string) => Promise<void>
@@ -25,6 +49,7 @@ export interface Api {
 /* Événements poussés par le processus principal vers l'interface */
 export interface Events {
   'library:changed': Game[]
+  'scan:state': { running: boolean; report?: ScanReport }
   'settings:changed': Settings
   'themes:changed': { id: string; themes: ThemeEntry[] }
 }
@@ -36,6 +61,10 @@ export const CHANNELS = [
   'app:info',
   'library:list',
   'library:update',
+  'library:rescan',
+  'library:addManual',
+  'library:remove',
+  'fs:list',
   'collections:list',
   'collections:create',
   'collections:rename',
@@ -45,7 +74,7 @@ export const CHANNELS = [
   'themes:list'
 ] as const satisfies readonly Channel[]
 
-export const EVENTS = ['library:changed', 'settings:changed', 'themes:changed'] as const satisfies readonly EventName[]
+export const EVENTS = ['library:changed', 'scan:state', 'settings:changed', 'themes:changed'] as const satisfies readonly EventName[]
 
 /* Ce que l'interface voit dans window.orbe */
 export type OrbeApi = Api & {
