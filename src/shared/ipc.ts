@@ -22,6 +22,9 @@ export interface FsEntry { name: string; path: string; dir: boolean }
 export interface FsListing { dir: string; parent: string | null; entries: FsEntry[] }
 export type FsFilter = 'exe' | 'image' | 'dir'
 
+export type MediaKind = 'cover' | 'hero' | 'logo' | 'icon'
+export interface MediaOption { url: string; thumb: string; width?: number; height?: number }
+
 export interface ThemeEntry {
   manifest: ThemeManifest
   base: string // URL de base des fichiers du thème (orbe-theme://<id>/)
@@ -37,6 +40,10 @@ export interface Api {
   'library:addManual': (input: ManualGameInput) => Promise<Game>
   'library:remove': (id: string) => Promise<void>
   'fs:list': (dir: string, filter: FsFilter) => Promise<FsListing>
+  'media:options': (gameId: string, kind: MediaKind) => Promise<MediaOption[]>
+  'media:set': (gameId: string, kind: MediaKind, url: string) => Promise<Game>
+  'media:setFile': (gameId: string, kind: MediaKind, path: string) => Promise<Game>
+  'media:refresh': (gameId: string) => Promise<void>
   'collections:list': () => Promise<Collection[]>
   'collections:create': (name: string) => Promise<Collection>
   'collections:rename': (id: string, name: string) => Promise<void>
@@ -65,6 +72,10 @@ export const CHANNELS = [
   'library:addManual',
   'library:remove',
   'fs:list',
+  'media:options',
+  'media:set',
+  'media:setFile',
+  'media:refresh',
   'collections:list',
   'collections:create',
   'collections:rename',

@@ -1,9 +1,12 @@
 /* Processus principal : fenêtre plein écran, stockage, IPC. */
 import { join } from 'node:path'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, safeStorage } from 'electron'
 import { emit, handle, registerCore } from './ipc'
 import { registerLibrary } from './library'
 import { initLog, log } from './log'
+import { Media } from './media'
+import { MediaCache } from './media/cache'
+import { registerMedia } from './media-ipc'
 import { Store } from './store'
 import { registerThemeScheme, Themes } from './themes'
 
@@ -19,7 +22,9 @@ if (!app.requestSingleInstanceLock()) app.quit()
 registerThemeScheme()
 
 let win: BrowserWindow | null = null
-const store = new Store(dataDir)
+// la clé SteamGridDB est chiffrée sur le disque (DPAPI) quand c'est possible
+const crypt = { enc: (s: string) => safeStorage.encryptString(s).toString('base64'), dec: (s: string) => safeStorage.decryptString(Buffer.from(s, 'base64')) }
+let store: Store
 const themes = new Themes(dataDir)
 
 function createWindow(): BrowserWindow {
@@ -57,16 +62,22 @@ app.on('second-instance', () => {
 })
 
 app.whenReady().then(() => {
+  store = new Store(dataDir, safeStorage.isEncryptionAvailable() ? crypt : undefined)
   const ctx = {
     store,
     dataDir,
     win: () => win,
     onSettings: (s: typeof store.settings, before: typeof store.settings) => {
       if (win && s.fullscreen !== before.fullscreen) win.setFullScreen(s.fullscreen)
+      if (s.steamGridDbKey !== before.steamGridDbKey) { media.keyChanged(); media.enqueue(media.missing()) }
     }
   }
+  const cache = new MediaCache(join(dataDir, 'media'))
+  cache.registerProtocol()
   registerCore(ctx)
-  const library = registerLibrary(ctx)
+  const media = new Media(ctx, cache)
+  registerMedia(ctx, media)
+  const library = registerLibrary(ctx, (ids) => media.enqueue(ids))
   themes.registerProtocol()
   handle('themes:list', async () => themes.list())
   themes.watch((id) => emit(win, 'themes:changed', { id, themes: themes.list() }))
@@ -75,5 +86,5 @@ app.whenReady().then(() => {
   win.webContents.once('did-finish-load', () => library.rescan()) // scan au démarrage, l'interface affiche déjà la bibliothèque connue
 })
 
-app.on('before-quit', () => store.flush())
+app.on('before-quit', () => store?.flush())
 app.on('window-all-closed', () => app.quit())

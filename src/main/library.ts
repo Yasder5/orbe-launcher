@@ -27,7 +27,7 @@ export function listDir(dir: string, filter: FsFilter): FsListing {
   return { dir, parent: dir === root ? '' : dirname(dir), entries: entries.slice(0, 2000) }
 }
 
-export function registerLibrary(ctx: Ctx): { rescan: () => Promise<ScanReport> } {
+export function registerLibrary(ctx: Ctx, fetchMedia: (ids: string[]) => void): { rescan: () => Promise<ScanReport> } {
   const { store } = ctx
   let running: Promise<ScanReport> | null = null
 
@@ -42,6 +42,7 @@ export function registerLibrary(ctx: Ctx): { rescan: () => Promise<ScanReport> }
       L.info('scan terminé', report)
       emit(ctx.win(), 'library:changed', store.list())
       emit(ctx.win(), 'scan:state', { running: false, report })
+      fetchMedia(games.filter((g) => !g.hidden && (!g.media.cover || !g.media.hero) && (g.mediaCheckedAt ?? 0) < Date.now() - 7 * 864e5).map((g) => g.id))
       return report
     })().finally(() => { running = null }))
 
@@ -52,6 +53,7 @@ export function registerLibrary(ctx: Ctx): { rescan: () => Promise<ScanReport> }
     g.platformId = g.id.slice('manual:'.length)
     store.games.set(g.id, g)
     store.save()
+    fetchMedia([g.id])
     emit(ctx.win(), 'library:changed', store.list())
     return g
   })

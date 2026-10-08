@@ -30,6 +30,12 @@ function writeJson(file: string, data: unknown): void {
   renameSync(tmp, file)
 }
 
+/* Chiffrement facultatif des secrets (safeStorage d'Electron = DPAPI sous Windows) */
+export interface Crypt {
+  enc: (s: string) => string
+  dec: (s: string) => string
+}
+
 export class Store {
   games = new Map<string, Game>()
   collections: Collection[] = []
@@ -37,14 +43,17 @@ export class Store {
   settings: Settings = structuredClone(DEFAULT_SETTINGS)
   private timer: NodeJS.Timeout | null = null
 
-  constructor(private dir: string) {
+  constructor(private dir: string, private crypt?: Crypt) {
     mkdirSync(dir, { recursive: true })
     const lib = readJson<LibraryFile>(join(dir, 'library.json'), { version: 1, games: [], collections: [] })
     for (const g of lib.games) this.games.set(g.id, g)
     this.collections = lib.collections
     this.sessions = readJson<Session[]>(join(dir, 'sessions.json'), [])
-    const s = readJson<Partial<Settings>>(join(dir, 'settings.json'), {})
+    const { steamGridDbKeyEnc, ...s } = readJson<Partial<Settings> & { steamGridDbKeyEnc?: string }>(join(dir, 'settings.json'), {})
     this.settings = { ...this.settings, ...s, scanners: { ...this.settings.scanners, ...s.scanners } }
+    if (steamGridDbKeyEnc && crypt) {
+      try { this.settings.steamGridDbKey = crypt.dec(steamGridDbKeyEnc) } catch { L.warn('clé SteamGridDB illisible (autre session Windows ?), à ressaisir') }
+    }
   }
 
   list(): Game[] {
@@ -62,6 +71,7 @@ export class Store {
     this.timer = null
     writeJson(join(this.dir, 'library.json'), { version: 1, games: this.list(), collections: this.collections } satisfies LibraryFile)
     writeJson(join(this.dir, 'sessions.json'), this.sessions)
-    writeJson(join(this.dir, 'settings.json'), this.settings)
+    const { steamGridDbKey, ...rest } = this.settings
+    writeJson(join(this.dir, 'settings.json'), this.crypt && steamGridDbKey ? { ...rest, steamGridDbKey: '', steamGridDbKeyEnc: this.crypt.enc(steamGridDbKey) } : this.settings)
   }
 }

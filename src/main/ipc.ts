@@ -2,6 +2,7 @@
 import { randomUUID } from 'node:crypto'
 import { app, ipcMain, type BrowserWindow, type IpcMainInvokeEvent } from 'electron'
 import type { Api, Channel, EventName, Events } from '../shared/ipc'
+import type { Settings } from '../shared/types'
 import { log } from './log'
 import type { Store } from './store'
 import { gamePatch, settingsPatch, str } from './validate'
@@ -12,8 +13,10 @@ export interface Ctx {
   store: Store
   win: () => BrowserWindow | null
   dataDir: string
-  onSettings: (s: import('../shared/types').Settings, before: import('../shared/types').Settings) => void
+  onSettings: (s: Settings, before: Settings) => void
 }
+
+export const MASK = '••••'
 
 export function emit<E extends EventName>(win: BrowserWindow | null, event: E, payload: Events[E]): void {
   if (win && !win.isDestroyed()) win.webContents.send(event, payload)
@@ -75,13 +78,17 @@ export function registerCore(ctx: Ctx): void {
     changed()
   })
 
-  handle('settings:get', async () => store.settings)
+  // la clé API ne repart jamais en clair vers l'interface : seulement ses 4 derniers caractères
+  const masked = (s: Settings): Settings => ({ ...s, steamGridDbKey: s.steamGridDbKey ? MASK + s.steamGridDbKey.slice(-4) : '' })
+  handle('settings:get', async () => masked(store.settings))
   handle('settings:set', async (patch) => {
     const before = { ...store.settings }
-    store.settings = { ...store.settings, ...settingsPatch(patch) }
+    const p = settingsPatch(patch)
+    if (p.steamGridDbKey?.startsWith(MASK)) delete p.steamGridDbKey // valeur masquée renvoyée telle quelle
+    store.settings = { ...store.settings, ...p }
     store.save()
     ctx.onSettings(store.settings, before)
-    emit(ctx.win(), 'settings:changed', store.settings)
-    return store.settings
+    emit(ctx.win(), 'settings:changed', masked(store.settings))
+    return masked(store.settings)
   })
 }

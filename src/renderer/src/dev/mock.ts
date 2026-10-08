@@ -15,9 +15,11 @@ const SAMPLE: [string, string, string][] = [
   ['814380', 'Sekiro: Shadows Die Twice', 'steam'], ['1092790', 'Inscryption', 'epic'], ['1687950', 'Persona 5 Royal', 'steam'], ['2552430', 'KINGDOM HEARTS -HD 1.5+2.5 ReMIX-', 'epic']
 ]
 const day = 864e5
+const cdn = (a: string) => { const b = `https://cdn.cloudflare.steamstatic.com/steam/apps/${a}`; return { cover: `${b}/library_600x900_2x.jpg`, hero: `${b}/library_hero.jpg`, logo: `${b}/logo.png` } }
 const games: Game[] = SAMPLE.map(([appid, name, platform], i) => ({
   id: `${platform}:${appid}`, platform: platform as Game['platform'], platformId: appid, name, steamAppId: appid, installed: i !== 13, favorite: i % 5 === 0, hidden: false,
-  addedAt: Date.now() - i * 3 * day, lastPlayed: i < 6 ? Date.now() - i * day : undefined, playtime: (16 - i) * 3600 * 2.3, collections: [], media: {}
+  addedAt: Date.now() - i * 3 * day, lastPlayed: i < 6 ? Date.now() - i * day : undefined, playtime: (16 - i) * 3600 * 2.3, collections: [], media: i === 7 ? {} : cdn(appid),
+  info: { description: 'Description du jeu tirée du store Steam (aperçu).', genres: ['Action', 'Aventure'], releaseDate: '2017', developer: 'Studio' }
 }))
 
 async function themes(): Promise<ThemeEntry[]> {
@@ -52,6 +54,10 @@ export const mock: OrbeApi = {
   },
   'library:remove': async (id) => { games.splice(games.findIndex((g) => g.id === id), 1); fire('library:changed', games) },
   'fs:list': async (dir) => ({ dir, parent: dir ? '' : null, entries: dir ? [{ name: 'Jeu.exe', path: dir + '\\Jeu.exe', dir: false }] : [{ name: 'C:\\', path: 'C:\\', dir: true }] }),
+  'media:options': async (id) => { const g = games.find((x) => x.id === id)!; const c = cdn(g.platformId); return [c.cover, c.cover].map((url) => ({ url, thumb: url })) },
+  'media:set': async (id, kind, url) => { const g = games.find((x) => x.id === id)!; g.media[kind] = url; fire('library:changed', games); return g },
+  'media:setFile': async (id) => games.find((x) => x.id === id)!,
+  'media:refresh': async () => {},
   'collections:list': async () => collections,
   'collections:create': async (name) => {
     const c = { id: String(Date.now()), name, createdAt: Date.now() }

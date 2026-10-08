@@ -31,3 +31,15 @@ describe('Store', () => {
     expect(new Store(d).settings.scanners).toEqual({ ...DEFAULT_SETTINGS.scanners, steam: false })
   })
 })
+
+describe('Store : clé API chiffrée', () => {
+  it("n'écrit jamais la clé en clair quand le chiffrement est disponible", () => {
+    const d = tmp(), crypt = { enc: (s: string) => Buffer.from(s).toString('hex'), dec: (s: string) => Buffer.from(s, 'hex').toString() }
+    const s = new Store(d, crypt)
+    s.settings.steamGridDbKey = 'secret123'
+    s.flush()
+    const raw = readFileSync(join(d, 'settings.json'), 'utf8')
+    expect(raw).not.toContain('secret123')
+    expect(new Store(d, crypt).settings.steamGridDbKey).toBe('secret123')
+  })
+})

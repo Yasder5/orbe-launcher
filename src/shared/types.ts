@@ -40,6 +40,9 @@ export interface Game {
   steamAppId?: string // utile pour les médias même hors Steam
   nameLocked?: boolean // nom modifié par l'utilisateur : le scan ne l'écrase plus
   argsLocked?: boolean // arguments / dossier de travail modifiés à la main
+  sgdbId?: number // identifiant SteamGridDB (mis en cache)
+  steamSearched?: boolean // appid Steam déjà cherché pour un jeu hors Steam
+  mediaCheckedAt?: number
 }
 
 export interface Session {
