@@ -4,6 +4,7 @@ import type { ScannerId, Settings } from '../../shared/types'
 import { log } from '../log'
 import { ea } from './ea'
 import { epic } from './epic'
+import { folderScanner } from './folder'
 import { gog } from './gog'
 import { regQuery } from './reg'
 import { steam } from './steam'
@@ -28,7 +29,7 @@ export interface ScanResult {
 
 const withTimeout = <T>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`délai dépassé (${ms} ms)`)), ms))])
 
-export async function runScanners(settings: Settings, env: ScanEnv = realEnv, scanners = ALL_SCANNERS): Promise<ScanResult> {
+export async function runScanners(settings: Settings, env: ScanEnv = realEnv, scanners = [...ALL_SCANNERS, folderScanner(() => settings.extraFolders)]): Promise<ScanResult> {
   const res: ScanResult = { ok: {}, failed: [] }
   await Promise.all(
     scanners.filter((s) => settings.scanners[s.id]).map(async (s) => {

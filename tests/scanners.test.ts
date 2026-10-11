@@ -97,3 +97,19 @@ describe('runScanners', () => {
     expect(r.ok.gog).toBeUndefined()
   })
 })
+
+import { mainExe } from '../src/main/scanners/folder'
+
+describe('dossiers de jeux', () => {
+  it("prend le plus gros exe qui n'est pas un outil", () => {
+    const tree: Record<string, string[]> = {
+      'D:\\Jeux\\Celeste': ['Celeste.exe', 'unins000.exe', 'Content'],
+      'D:\\Jeux\\Celeste\\Content': ['Big.exe', 'Crash_Reporter.exe'],
+      'D:\\Jeux\\Vide': ['readme.txt']
+    }
+    const env = { list: (d: string) => tree[d] ?? [] } as unknown as ScanEnv
+    const sizes: Record<string, number> = { 'D:\\Jeux\\Celeste\\Celeste.exe': 50, 'D:\\Jeux\\Celeste\\unins000.exe': 900, 'D:\\Jeux\\Celeste\\Content\\Big.exe': 60, 'D:\\Jeux\\Celeste\\Content\\Crash_Reporter.exe': 999 }
+    expect(mainExe(env, 'D:\\Jeux\\Celeste', (p) => sizes[p] ?? 0)).toBe('D:\\Jeux\\Celeste\\Content\\Big.exe')
+    expect(mainExe(env, 'D:\\Jeux\\Vide', () => 0)).toBeNull()
+  })
+})

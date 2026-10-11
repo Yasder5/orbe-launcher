@@ -58,6 +58,11 @@ export const mock: OrbeApi = {
   'media:set': async (id, kind, url) => { const g = games.find((x) => x.id === id)!; g.media[kind] = url; fire('library:changed', games); return g },
   'media:setFile': async (id) => games.find((x) => x.id === id)!,
   'media:refresh': async () => {},
+  'game:launch': async (id) => { fire('session:state', { running: { gameId: id, start: Date.now(), tracked: true } }) },
+  'game:stop': async () => { fire('session:state', { running: null }) },
+  'session:get': async () => null,
+  'system:power': async () => {},
+  'system:quit': async () => {},
   'collections:list': async () => collections,
   'collections:create': async (name) => {
     const c = { id: String(Date.now()), name, createdAt: Date.now() }

@@ -1,8 +1,8 @@
 /* Types partagés entre le processus principal et l'interface */
 
-export type Platform = 'steam' | 'epic' | 'gog' | 'ubisoft' | 'ea' | 'manual'
+export type Platform = 'steam' | 'epic' | 'gog' | 'ubisoft' | 'ea' | 'folder' | 'manual'
 export type ScannerId = Exclude<Platform, 'manual'>
-export const SCANNERS: ScannerId[] = ['steam', 'epic', 'gog', 'ubisoft', 'ea']
+export const SCANNERS: ScannerId[] = ['steam', 'epic', 'gog', 'ubisoft', 'ea', 'folder']
 
 export interface GameMedia {
   cover?: string // URL servie par orbe-media:// (cache) ou fichier choisi par l'utilisateur
@@ -63,7 +63,7 @@ export interface Settings {
   theme: string
   steamGridDbKey: string
   scanners: Record<ScannerId, boolean>
-  extraFolders: string[] // dossiers supplémentaires où chercher des exe (ajout rapide)
+  extraFolders: string[] // dossiers de jeux : chaque sous-dossier = un jeu (scanner « folder »)
   autostart: boolean
   fullscreen: boolean
   kiosk: boolean
@@ -75,7 +75,7 @@ export interface Settings {
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'orbe',
   steamGridDbKey: '',
-  scanners: { steam: true, epic: true, gog: true, ubisoft: true, ea: true },
+  scanners: { steam: true, epic: true, gog: true, ubisoft: true, ea: true, folder: true },
   extraFolders: [],
   autostart: false,
   fullscreen: true,

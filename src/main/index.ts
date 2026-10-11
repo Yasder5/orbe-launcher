@@ -7,6 +7,10 @@ import { initLog, log } from './log'
 import { Media } from './media'
 import { MediaCache } from './media/cache'
 import { registerMedia } from './media-ipc'
+import { Sessions } from './launch/session'
+import { power, type PowerAction } from './win/power'
+import { watchGuide } from './win/xinput'
+import { str } from './validate'
 import { Store } from './store'
 import { registerThemeScheme, Themes } from './themes'
 
@@ -54,12 +58,19 @@ function createWindow(): BrowserWindow {
   return w
 }
 
-app.on('second-instance', () => {
-  if (win) {
-    if (win.isMinimized()) win.restore()
-    win.focus()
-  }
-})
+/* Ramène le launcher devant le jeu (Windows refuse souvent un simple focus() : passage temporaire au premier plan absolu) */
+function toFront(): void {
+  if (!win) return
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.setAlwaysOnTop(true, 'screen-saver')
+  win.focus()
+  app.focus({ steal: true })
+  setTimeout(() => win?.setAlwaysOnTop(false), 400)
+  emit(win, 'app:front', true)
+}
+
+app.on('second-instance', toFront)
 
 app.whenReady().then(() => {
   store = new Store(dataDir, safeStorage.isEncryptionAvailable() ? crypt : undefined)
@@ -70,6 +81,9 @@ app.whenReady().then(() => {
     onSettings: (s: typeof store.settings, before: typeof store.settings) => {
       if (win && s.fullscreen !== before.fullscreen) win.setFullScreen(s.fullscreen)
       if (s.steamGridDbKey !== before.steamGridDbKey) { media.keyChanged(); media.enqueue(media.missing()) }
+      if (s.kiosk !== before.kiosk) win?.setKiosk(s.kiosk)
+      if (s.autostart !== before.autostart && app.isPackaged) app.setLoginItemSettings({ openAtLogin: s.autostart, args: ['--autostart'] })
+      if (JSON.stringify(s.scanners) !== JSON.stringify(before.scanners) || s.extraFolders.join() !== before.extraFolders.join()) library.rescan()
     }
   }
   const cache = new MediaCache(join(dataDir, 'media'))
@@ -78,6 +92,23 @@ app.whenReady().then(() => {
   const media = new Media(ctx, cache)
   registerMedia(ctx, media)
   const library = registerLibrary(ctx, (ids) => media.enqueue(ids))
+
+  const sessions = new Sessions(ctx, toFront, () => win?.minimize())
+  handle('game:launch', async (id) => {
+    const g = store.games.get(str(id, 300, 'id'))
+    if (!g) throw new Error('jeu introuvable')
+    await sessions.launch(g)
+  })
+  handle('game:stop', async () => sessions.stop())
+  handle('session:get', async () => sessions.running)
+  handle('system:quit', async () => app.quit())
+  handle('system:power', async (a) => {
+    if (!['sleep', 'restart', 'shutdown'].includes(a)) throw new Error('action inconnue')
+    store.flush()
+    power(a as PowerAction)
+  })
+  // Guide (ou Back + Start) tenu : retour au launcher, même pendant un jeu
+  watchGuide(() => { if (!win?.isFocused()) toFront() })
   themes.registerProtocol()
   handle('themes:list', async () => themes.list())
   themes.watch((id) => emit(win, 'themes:changed', { id, themes: themes.list() }))

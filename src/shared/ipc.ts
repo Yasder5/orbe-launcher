@@ -22,6 +22,9 @@ export interface FsEntry { name: string; path: string; dir: boolean }
 export interface FsListing { dir: string; parent: string | null; entries: FsEntry[] }
 export type FsFilter = 'exe' | 'image' | 'dir'
 
+export interface RunningGame { gameId: string; start: number; tracked: boolean }
+export type PowerAction = 'sleep' | 'restart' | 'shutdown'
+
 export type MediaKind = 'cover' | 'hero' | 'logo' | 'icon'
 export interface MediaOption { url: string; thumb: string; width?: number; height?: number }
 
@@ -44,6 +47,11 @@ export interface Api {
   'media:set': (gameId: string, kind: MediaKind, url: string) => Promise<Game>
   'media:setFile': (gameId: string, kind: MediaKind, path: string) => Promise<Game>
   'media:refresh': (gameId: string) => Promise<void>
+  'game:launch': (id: string) => Promise<void>
+  'game:stop': () => Promise<void>
+  'session:get': () => Promise<RunningGame | null>
+  'system:power': (action: PowerAction) => Promise<void>
+  'system:quit': () => Promise<void>
   'collections:list': () => Promise<Collection[]>
   'collections:create': (name: string) => Promise<Collection>
   'collections:rename': (id: string, name: string) => Promise<void>
@@ -57,6 +65,8 @@ export interface Api {
 export interface Events {
   'library:changed': Game[]
   'scan:state': { running: boolean; report?: ScanReport }
+  'session:state': { running: RunningGame | null; last?: { gameId: string; duration: number } }
+  'app:front': true
   'settings:changed': Settings
   'themes:changed': { id: string; themes: ThemeEntry[] }
 }
@@ -76,6 +86,11 @@ export const CHANNELS = [
   'media:set',
   'media:setFile',
   'media:refresh',
+  'game:launch',
+  'game:stop',
+  'session:get',
+  'system:power',
+  'system:quit',
   'collections:list',
   'collections:create',
   'collections:rename',
@@ -85,7 +100,7 @@ export const CHANNELS = [
   'themes:list'
 ] as const satisfies readonly Channel[]
 
-export const EVENTS = ['library:changed', 'scan:state', 'settings:changed', 'themes:changed'] as const satisfies readonly EventName[]
+export const EVENTS = ['library:changed', 'scan:state', 'session:state', 'app:front', 'settings:changed', 'themes:changed'] as const satisfies readonly EventName[]
 
 /* Ce que l'interface voit dans window.orbe */
 export type OrbeApi = Api & {

@@ -7,11 +7,13 @@ import { play } from './sounds'
 import { pickNext, type Dir } from './spatial'
 
 type Handler = (a: Action) => boolean | void // true = action consommée
+type Entry = { current: Handler; prio: number; order: number }
+let order = 0
 
 interface Ctx {
   kind: InputKind
   focus: (el: Element | null) => void
-  push: (h: { current: Handler }) => () => void
+  push: (h: { current: Handler }, prio: number) => () => void
   sound: (s: SoundName) => void
   current: () => HTMLElement | null
 }
@@ -29,7 +31,7 @@ const visible = (el: Element) => { const r = el.getBoundingClientRect(); return 
 export function NavProvider({ children, onGuide }: { children: ReactNode; onGuide?: () => void }) {
   const [kind, setKind] = useState<InputKind>('mouse')
   const cur = useRef<HTMLElement | null>(null)
-  const stack = useRef<{ current: Handler }[]>([])
+  const stack = useRef<Entry[]>([]) // trié : priorité puis ordre d'arrivée
   const { settings } = useSettings()
   const vib = useRef(settings.vibration)
   vib.current = settings.vibration
@@ -69,6 +71,7 @@ export function NavProvider({ children, onGuide }: { children: ReactNode; onGuid
         for (let i = stack.current.length - 1; i >= 0; i--) if (stack.current[i].current(a)) return
         if (a === 'up' || a === 'down' || a === 'left' || a === 'right') move(a)
         else if (a === 'accept' && cur.current) { play('select'); cur.current.click() }
+        else if (a === 'back') play('back')
       },
       guideHeld: onGuide
     })
@@ -79,16 +82,23 @@ export function NavProvider({ children, onGuide }: { children: ReactNode; onGuid
     return () => { stop(); mo.disconnect(); removeEventListener('pointerover', over) }
   }, [move, focus, refocus, onGuide])
 
-  const push = useCallback((h: { current: Handler }) => { stack.current.push(h); return () => { stack.current = stack.current.filter((x) => x !== h) } }, [])
+  const push = useCallback((h: { current: Handler }, prio: number) => {
+    const e: Entry = { get current() { return h.current }, prio, order: order++ }
+    stack.current = [...stack.current, e].sort((a, b) => a.prio - b.prio || a.order - b.order)
+    return () => { stack.current = stack.current.filter((x) => x !== e) }
+  }, [])
   return <NavCtx.Provider value={{ kind, focus, push, sound: play, current: () => cur.current }}>{children}</NavCtx.Provider>
 }
 
 export const useNavCtx = () => useContext(NavCtx)
 
-/* Intercepte les actions tant que le composant est affiché (le plus récent passe en premier) */
-export function useNav(handler: Handler, active = true): void {
+/* Intercepte les actions tant que le composant est affiché.
+   Priorité : 0 = coque de l'appli, 1 = écran, 2 = fenêtre modale ; à priorité égale, le plus récent passe en premier. */
+export function useNav(handler: Handler, active = true, prio = 1): void {
   const { push } = useNavCtx()
   const ref = useRef(handler)
   ref.current = handler
-  useEffect(() => (active ? push(ref) : undefined), [push, active])
+  useEffect(() => (active ? push(ref, prio) : undefined), [push, active, prio])
 }
+
+export const modalOpen = () => !!document.querySelector('[data-nav-scope]')

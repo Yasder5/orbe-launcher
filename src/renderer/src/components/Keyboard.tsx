@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { HintBar } from '../nav/glyphs'
 import { useNav } from '../nav/nav'
+import { play } from '../nav/sounds'
 import { useSettings } from '../state/settings'
 import { useT } from '../i18n/i18n'
 
@@ -46,13 +47,13 @@ export function Keyboard({ title, value: initial, max = 120, onChange, onSubmit,
   })
 
   useNav((a) => {
-    if (a === 'back') { onCancel(); return true }
+    if (a === 'back') { play('back'); onCancel(); return true }
     if (a === 'x') { del(); return true }
     if (a === 'y') { type(' '); return true }
     if (a === 'lb' || a === 'lt') { setShift((s) => !s); return true }
     if (a === 'menu' || a === 'rt') { onSubmit(value); return true }
     return false
-  })
+  }, true, 2)
 
   return (
     <div className="modal osk" data-nav-scope role="dialog" aria-label={title ?? t('kb.title')}>
