@@ -1,5 +1,6 @@
 appId: fr.yasder5.orbelauncher
 productName: Orbe Launcher
+copyright: Copyright © 2026 Yasser Boulayoune
 directories:
   output: dist
   buildResources: build
@@ -13,14 +14,33 @@ extraResources:
 asarUnpack:
   - node_modules/koffi/**
 win:
-  icon: build/icon.png
+  icon: build/icon.ico
   target: [nsis, portable]
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  publisherName: Yasser Boulayoune
+  # Signature : faite seulement si un certificat est fourni (variables WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD, voir README)
+  signtoolOptions:
+    signingHashAlgorithms: [sha256]
+    rfc3161TimeStampServer: http://timestamp.digicert.com
 nsis:
   oneClick: false
+  perMachine: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
+  createStartMenuShortcut: true
   shortcutName: Orbe Launcher
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  # fenêtre d'installation aux couleurs d'Orbe
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  installerSidebar: build/installerSidebar.bmp
+  uninstallerSidebar: build/installerSidebar.bmp
+  installerHeader: build/installerHeader.bmp
+  license: LICENSE
+  installerLanguages: [fr_FR, en_US]
+  language: '1036'
+  multiLanguageInstaller: true
   artifactName: ${productName}-Setup-${version}.${ext}
 portable:
   artifactName: ${productName}-Portable-${version}.${ext}
