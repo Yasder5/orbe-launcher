@@ -16,9 +16,9 @@ asarUnpack:
 win:
   icon: build/icon.ico
   target: [nsis, portable]
-  publisherName: Yasser Boulayoune
   # Signature : faite seulement si un certificat est fourni (variables WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD, voir README)
   signtoolOptions:
+    publisherName: Yasser Boulayoune
     signingHashAlgorithms: [sha256]
     rfc3161TimeStampServer: http://timestamp.digicert.com
 nsis:
