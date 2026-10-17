@@ -1,7 +1,7 @@
 {
   "name": "orbe-launcher",
   "productName": "Orbe Launcher",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Launcher de jeux PC plein écran, pensé pour la manette, avec thèmes.",
   "author": "Yasser Boulayoune",
   "license": "MIT",
