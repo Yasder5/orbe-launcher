@@ -1,0 +1,5 @@
+/* Orbe de particules (image fixe, rendue par tools/art.html) derrière l'accueil et la bibliothèque */
+.gamepadui_BasicHome.gamepadui_OpaqueBackground,
+.gamepadlibrary_GamepadLibrary {
+  background: url(/themes_custom/Orbe/orb.webp) right -10vw center / auto 110% no-repeat, radial-gradient(ellipse at 74% 50%, #151b09 0%, #0d0f0a 35%, #0a0a0a 70%) !important;
+}

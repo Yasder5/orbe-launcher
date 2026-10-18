@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Orbe Steam art</title>
+<style>
+/* Rendu image par image (pilote : tools/render.py). ?mode=bg : fond transparent 1920×1080 ; ?mode=boot : vidéo de démarrage 1280×800. */
+@font-face { font-family: Archivo; src: url(../Orbe/fonts/Archivo.woff2) format('woff2'); font-weight: 100 900; }
+html, body { margin: 0; background: transparent; overflow: hidden; }
+body.boot { background: #0a0a0a; }
+canvas { position: absolute; inset: 0; }
+.mark { position: absolute; left: 0; right: 0; top: 50%; text-align: center; font: 900 120px/1 Archivo; letter-spacing: -.05em; color: #f5f5f0; opacity: 0; }
+.mark span { color: #d3fd50; }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div class="mark" id="mark">orbe<span>.</span></div>
+<script>
+const mode = new URLSearchParams(location.search).get('mode') || 'bg'
+const W = mode === 'boot' ? 1280 : 1920, H = mode === 'boot' ? 800 : 1080
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), mark = document.getElementById('mark')
+cv.width = W; cv.height = H; cv.style.width = W + 'px'; cv.style.height = H + 'px'
+if (mode === 'boot') document.body.className = 'boot'
+
+/* Même sphère de Fibonacci que le launcher et le site ; départ dispersé (graine fixe) pour l'arrivée des particules */
+const N = 620, pts = []
+let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647
+for (let i = 0; i < N; i++) {
+  const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = i * 2.39996323
+  const a = rnd() * 6.283, d = 1.6 + rnd() * 2.2
+  pts.push({ x: Math.cos(th) * r, y, z: Math.sin(th) * r, hot: i % 9 === 0, sx: Math.cos(a) * d, sy: Math.sin(a) * d, lag: rnd() * .35 })
+}
+const ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3)
+
+/* t en secondes */
+window.render = t => {
+  const boot = mode === 'boot'
+  const R = boot ? 250 : 430, cx = boot ? W / 2 : W * .74, cy = boot ? H / 2 - 40 : H * .5
+  const a = .6 + t * .35, b = Math.sin(t * .4) * .3, ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b)
+  /* vidéo : arrivée 0 → 1,6 s, l'orbe s'efface derrière le mot (2,2 → 3 s), fondu au noir à la fin (3,4 → 4 s) */
+  const fade = boot ? 1 - ease((t - 3.4) / .6) : 1, dim = boot ? 1 - .7 * ease((t - 2.2) / .8) : 1
+  ctx.clearRect(0, 0, W, H)
+  for (const p of pts) {
+    const k = boot ? ease((t - p.lag) / 1.25) : 1
+    const x1 = p.x * ca - p.z * sa, z1 = p.x * sa + p.z * ca, y1 = p.y * cb - z1 * sb, z2 = p.y * sb + z1 * cb, d = (z2 + 1.4) / 2.4
+    const px = p.sx + (x1 - p.sx) * k, py = p.sy + (y1 - p.sy) * k
+    const al = (p.hot ? .2 + d * .7 : .06 + d * .42) * fade * dim * (boot ? Math.min(1, k * 1.5) : 1)
+    ctx.fillStyle = p.hot ? `rgba(211,253,80,${al})` : `rgba(243,243,238,${al})`
+    ctx.beginPath(); ctx.arc(cx + px * R, cy + py * R, (p.hot ? 2.4 : 1.5) * (boot ? 1.4 : 2) * (.6 + d * .7), 0, 6.283); ctx.fill()
+  }
+  if (boot) {
+    const m = ease((t - 1.7) / .7) * fade
+    mark.style.opacity = m; mark.style.transform = `translateY(${-50 + (1 - m) * 12}%)`
+  }
+}
+render(0)
+</script>
+</body>
+</html>

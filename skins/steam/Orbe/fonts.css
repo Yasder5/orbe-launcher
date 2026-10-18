@@ -1,0 +1,9 @@
+/* Archivo à la place de Motiva Sans : on redéclare la famille utilisée par Steam (les dernières déclarations l'emportent), sans toucher aux sélecteurs. */
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 100; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 300; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 500; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 700; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 300; font-style: italic; }
+@font-face { font-family: "Motiva Sans"; src: url(/themes_custom/Orbe/fonts/Archivo.woff2) format("woff2"); font-weight: 700; font-style: italic; }

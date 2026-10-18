@@ -1,0 +1,61 @@
+/* Orbe pour Steam (Big Picture, mode jeu SteamOS) via CSS Loader.
+   Les classes sont écrites sous leur nom lisible : CSS Loader les traduit vers les noms de la version de Steam installée
+   (tools/check.py vérifie qu'elles existent toutes). */
+:root {
+  --orbe-bg: #0a0a0a;
+  --orbe-surface: #121212;
+  --orbe-line: #262624;
+  --orbe-text: #f5f5f0;
+  --orbe-muted: #8f8f8a;
+  --orbe-accent: #d3fd50;
+}
+
+::selection { background: var(--orbe-accent); color: var(--orbe-bg); }
+
+/* Fonds : noir profond à la place du bleu nuit */
+.gamepadui_BasicHome.gamepadui_OpaqueBackground,
+.gamepadlibrary_GamepadLibrary { background: var(--orbe-bg) !important; }
+.gamepadpagedsettings_PagedSettingsDialog,
+.mainmenu_Menu { background: var(--orbe-bg) !important; }
+
+/* Jaquettes : contour citron au focus */
+.appportrait_LibraryItemBox.gpfocus {
+  outline: 3px solid var(--orbe-accent) !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 34px rgba(211, 253, 80, .28) !important;
+}
+
+/* Boutons : accent plein au focus */
+button.DialogButton.gpfocus,
+button.DialogButton:enabled.gpfocus,
+button.gamepaddialog_Button.DialogButton.gpfocus,
+button.gamepaddialog_Button.DialogButton:enabled.gpfocus {
+  background: var(--orbe-accent) !important;
+  color: var(--orbe-bg) !important;
+}
+
+/* Onglets du haut */
+.gamepadtabbedpage_Tab.gamepadtabbedpage_Selected,
+.gamepadtabbedpage_Tab.gamepadtabbedpage_Selected:hover {
+  background-color: var(--orbe-accent) !important;
+  color: var(--orbe-bg) !important;
+}
+
+/* Menu principal : entrée active en citron */
+.mainmenu_Item.mainmenu_Active,
+.mainmenu_Item.mainmenu_Active .mainmenu_ItemIcon { color: var(--orbe-accent) !important; }
+
+/* Menus contextuels */
+.gamepadcontextmenu_contextMenuItem.gamepadcontextmenu_Focused {
+  background: var(--orbe-accent) !important;
+  color: var(--orbe-bg) !important;
+}
+
+/* Lignes de réglage : léger voile citron au focus */
+.gamepaddialog_Field.gpfocus,
+.gamepaddialog_Field.gpfocuswithin { background: rgba(211, 253, 80, .08) !important; }
+
+/* Interrupteurs et curseurs */
+.gamepaddialog_ToggleRail::before { background: var(--orbe-accent) !important; }
+.gamepaddialog_Toggle.gamepaddialog_On .gamepaddialog_ToggleSwitch { background: var(--orbe-bg) !important; }
+.gamepadslider_SliderTrack { --left-track-color: var(--orbe-accent) !important; }

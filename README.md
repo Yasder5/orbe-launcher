@@ -138,6 +138,10 @@ themes/mon-theme/
 
 Les chemins doivent rester dans le dossier du thème (`..` et chemins absolus refusés) et les valeurs des variables ne peuvent pas contenir `url(`, `;` ou `{}` : un thème téléchargé ne peut ni lire vos fichiers ni casser l'interface. Les erreurs de thème sont écrites dans les logs. Les sons d'Orbe sont générés par `node tools/gen-sounds.mjs`.
 
+## Skin Steam
+
+Pour garder Steam avec le style Orbe : skin CSS Loader pour Big Picture et le mode jeu SteamOS, plus une vidéo de démarrage pour Steam Deck. Voir [`skins/steam`](skins/steam/README.md).
+
 ## Mode kiosque
 
 *Paramètres*, *Mode kiosque* : le launcher reste en plein écran et ne se ferme plus au clavier (Alt+F4 ne suffit pas) ; on le quitte par le menu système.

@@ -1,0 +1,29 @@
+{
+  "name": "Orbe",
+  "author": "yasder5",
+  "version": "v1.0.0",
+  "description": "Le style d'Orbe Launcher dans Steam (Big Picture et mode jeu SteamOS) : noir profond, accent citron, police Archivo, orbe de particules en fond.",
+  "target": "System-Wide",
+  "manifest_version": 8,
+  "inject": {
+    "shared.css": ["SP", "bigpicture", "QuickAccess", "MainMenu"]
+  },
+  "patches": {
+    "Police Archivo": {
+      "default": "Yes",
+      "type": "checkbox",
+      "values": {
+        "Yes": { "fonts.css": ["SP", "bigpicture", "QuickAccess", "MainMenu"] },
+        "No": {}
+      }
+    },
+    "Fond orbe": {
+      "default": "Yes",
+      "type": "checkbox",
+      "values": {
+        "Yes": { "background.css": ["SP", "bigpicture"] },
+        "No": {}
+      }
+    }
+  }
+}
